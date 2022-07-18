@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:state_managers/models/user.dart';
 import 'package:state_managers/screens/screen_two.dart';
+import 'package:state_managers/services/user_service.dart';
 
 class ScreenOneScreen extends StatelessWidget {
   const ScreenOneScreen({Key? key}) : super(key: key);
@@ -8,11 +11,25 @@ class ScreenOneScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final UserService userService = Provider.of<UserService>(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ScreenOneScreen'),
+        title: userService.existsUser
+            ? Text(userService.user!.name)
+            : const Text('Not user yet'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.remove_circle_outline),
+            onPressed: () {
+              userService.removeUser();
+            },
+          ),
+        ],
       ),
-      body: const _UserInfo(),
+      body: userService.existsUser
+          ? _UserInfo(user: userService.user!)
+          : const Center(child: Text("Not user")),
       floatingActionButton: FloatingActionButton(
         onPressed: () =>
             Navigator.pushNamed(context, ScreenTwoScreen.routeName),
@@ -25,45 +42,48 @@ class ScreenOneScreen extends StatelessWidget {
 class _UserInfo extends StatelessWidget {
   const _UserInfo({
     Key? key,
+    required this.user,
   }) : super(key: key);
+
+  final User user;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: double.infinity,
       width: double.infinity,
       padding: const EdgeInsets.all(20),
-      child:
-          Column(crossAxisAlignment: CrossAxisAlignment.start, children: const [
-        Text(
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const Text(
           'General',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
-        Divider(),
+        const Divider(),
         ListTile(
-          title: Text('Name'),
+          title: Text('Name : ${user.name}'),
         ),
         ListTile(
-          title: Text('Age'),
+          title: Text('Age : ${user.age}'),
         ),
-        Text(
+        const Text(
           'Careers',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
-        ListTile(
-          title: Text('Career 1'),
-        ),
-        ListTile(
-          title: Text('Career 2'),
-        ),
-        ListTile(
-          title: Text('Career 3'),
+        SizedBox(
+          height: 500,
+          child: ListView.builder(
+            itemCount: user.carrers!.length,
+            itemBuilder: (BuildContext context, int index) {
+              return ListTile(
+                title: Text(user.carrers![index]),
+              );
+            },
+          ),
         ),
       ]),
     );
