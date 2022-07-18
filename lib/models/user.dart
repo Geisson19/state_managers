@@ -1,7 +1,7 @@
 class User {
-  final String nombre;
-  final int edad;
-  final List<String> hobbies;
+  String name;
+  int? age;
+  List<String>? carrers;
 
-  User({required this.nombre, required this.edad, required this.hobbies});
+  User({required this.name, this.age, this.carrers});
 }
