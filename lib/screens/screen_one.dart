@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:state_managers/models/user.dart';
 import 'package:state_managers/screens/screen_two.dart';
+import 'package:state_managers/services/user_service.dart';
 
 class ScreenOneScreen extends StatelessWidget {
   const ScreenOneScreen({Key? key}) : super(key: key);
@@ -12,7 +14,18 @@ class ScreenOneScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('ScreenOneScreen'),
       ),
-      body: const _UserInfo(),
+      body: StreamBuilder(
+        stream: userService.userStream,
+        builder: (_, AsyncSnapshot snapshot) {
+          return snapshot.hasData
+              ? _UserInfo(
+                  user: userService.user!,
+                )
+              : const Center(
+                  child: Text('No user'),
+                );
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () =>
             Navigator.pushNamed(context, ScreenTwoScreen.routeName),
@@ -25,7 +38,10 @@ class ScreenOneScreen extends StatelessWidget {
 class _UserInfo extends StatelessWidget {
   const _UserInfo({
     Key? key,
+    required this.user,
   }) : super(key: key);
+
+  final User user;
 
   @override
   Widget build(BuildContext context) {
@@ -33,36 +49,35 @@ class _UserInfo extends StatelessWidget {
       height: double.infinity,
       width: double.infinity,
       padding: const EdgeInsets.all(20),
-      child:
-          Column(crossAxisAlignment: CrossAxisAlignment.start, children: const [
-        Text(
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const Text(
           'General',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
-        Divider(),
+        const Divider(),
         ListTile(
-          title: Text('Name'),
+          title: Text('Name: ${user.name}'),
         ),
         ListTile(
-          title: Text('Age'),
+          title: Text('Age ${user.age}'),
         ),
         Text(
-          'Careers',
-          style: TextStyle(
+          'Careers (${user.careers?.length ?? 0})',
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
-        ListTile(
+        const ListTile(
           title: Text('Career 1'),
         ),
-        ListTile(
+        const ListTile(
           title: Text('Career 2'),
         ),
-        ListTile(
+        const ListTile(
           title: Text('Career 3'),
         ),
       ]),

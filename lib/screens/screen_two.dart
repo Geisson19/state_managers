@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:state_managers/models/user.dart';
+import 'package:state_managers/services/user_service.dart';
 
 class ScreenTwoScreen extends StatelessWidget {
   const ScreenTwoScreen({Key? key}) : super(key: key);
@@ -9,13 +11,23 @@ class ScreenTwoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ScreenTwoScreen'),
+        title: StreamBuilder(
+          stream: userService.userStream,
+          builder: (_, AsyncSnapshot snapshot) {
+            if (snapshot.hasData) {
+              return Text('${snapshot.data.name}');
+            }
+            return const Text('No user');
+          },
+        ),
       ),
       body: Center(
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           MaterialButton(
               color: Colors.blue,
-              onPressed: () {},
+              onPressed: () {
+                userService.loadUser(User(name: 'Geisson', age: 20));
+              },
               child: const Text(
                 'Set username',
                 style: TextStyle(
@@ -24,7 +36,9 @@ class ScreenTwoScreen extends StatelessWidget {
               )),
           MaterialButton(
               color: Colors.blue,
-              onPressed: () {},
+              onPressed: () {
+                userService.loadAge(21);
+              },
               child: const Text(
                 'Change user\'s age',
                 style: TextStyle(
