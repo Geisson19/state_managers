@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:state_managers/bloc/user_bloc.dart';
+import 'package:state_managers/models/user.dart';
 import 'package:state_managers/screens/screen_two.dart';
 
 class ScreenOneScreen extends StatelessWidget {
@@ -11,8 +14,27 @@ class ScreenOneScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('ScreenOneScreen'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.remove_circle_outline),
+            onPressed: () {
+              BlocProvider.of<UserBloc>(context, listen: false)
+                  .add(RemoveUserEvent());
+            },
+          )
+        ],
       ),
-      body: const _UserInfo(),
+      body: BlocBuilder<UserBloc, UserState>(
+        builder: (_, state) {
+          return state.existUser
+              ? _UserInfo(user: state.user!)
+              : const Center(
+                  child: Text(
+                  'There\'s not selected user',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                ));
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () =>
             Navigator.pushNamed(context, ScreenTwoScreen.routeName),
@@ -23,8 +45,11 @@ class ScreenOneScreen extends StatelessWidget {
 }
 
 class _UserInfo extends StatelessWidget {
+  final User user;
+
   const _UserInfo({
     Key? key,
+    required this.user,
   }) : super(key: key);
 
   @override
@@ -33,37 +58,33 @@ class _UserInfo extends StatelessWidget {
       height: double.infinity,
       width: double.infinity,
       padding: const EdgeInsets.all(20),
-      child:
-          Column(crossAxisAlignment: CrossAxisAlignment.start, children: const [
-        Text(
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const Text(
           'General',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
-        Divider(),
+        const Divider(),
         ListTile(
-          title: Text('Name'),
+          title: Text('Name : ${user.name}'),
         ),
         ListTile(
-          title: Text('Age'),
+          title: Text('Age : ${user.age}'),
         ),
         Text(
-          'Careers',
-          style: TextStyle(
+          'Careers : (${user.careers.length})',
+          style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
-        ListTile(
-          title: Text('Career 1'),
-        ),
-        ListTile(
-          title: Text('Career 2'),
-        ),
-        ListTile(
-          title: Text('Career 3'),
+        const Divider(),
+        ...user.careers.map(
+          (career) => ListTile(
+            title: Text(career),
+          ),
         ),
       ]),
     );

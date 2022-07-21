@@ -15,3 +15,12 @@ class UserInitial extends UserState {
   @override
   String toString() => 'UserInitial { existUser: $existUser, user: $user }';
 }
+
+class UserSetState extends UserState {
+  final User newUser;
+
+  const UserSetState(this.newUser) : super(existUser: true, user: newUser);
+
+  @override
+  String toString() => 'UserSetState { existUser: $existUser, user: $user }';
+}

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:state_managers/bloc/user_bloc.dart';
+import 'package:state_managers/models/user.dart';
 
 class ScreenTwoScreen extends StatelessWidget {
   const ScreenTwoScreen({Key? key}) : super(key: key);
@@ -7,6 +10,7 @@ class ScreenTwoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userBloc = BlocProvider.of<UserBloc>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('ScreenTwoScreen'),
@@ -15,7 +19,13 @@ class ScreenTwoScreen extends StatelessWidget {
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           MaterialButton(
               color: Colors.blue,
-              onPressed: () {},
+              onPressed: () {
+                final User userToSend = User(name: 'John', age: 30, careers: [
+                  'Developer',
+                  'Teacher',
+                ]);
+                userBloc.add(ActivateUser(userToSend));
+              },
               child: const Text(
                 'Set username',
                 style: TextStyle(
@@ -24,7 +34,9 @@ class ScreenTwoScreen extends StatelessWidget {
               )),
           MaterialButton(
               color: Colors.blue,
-              onPressed: () {},
+              onPressed: () {
+                userBloc.add(ChangeUserAgeEvent(36));
+              },
               child: const Text(
                 'Change user\'s age',
                 style: TextStyle(
@@ -33,7 +45,9 @@ class ScreenTwoScreen extends StatelessWidget {
               )),
           MaterialButton(
               color: Colors.blue,
-              onPressed: () {},
+              onPressed: () {
+                userBloc.add(AddCareerEvent('Full Stack Developer'));
+              },
               child: const Text(
                 'Add career',
                 style: TextStyle(
